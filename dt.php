@@ -1,4 +1,5 @@
 <?php
+
 try {
     $date = new DateTime('2000-01-01');
     $dateFormat = DateTime::createFromFormat('j-M-Y', '15-Feb-2009');

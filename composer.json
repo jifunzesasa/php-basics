@@ -1,0 +1,26 @@
+{
+    "name": "alpha/php-basics",
+    "description": "Learn by doing",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Alpha\\PhpBasics\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Alpha\\PhpBasics\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alpha Olomi",
+            "email": "alphaolomi@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+     "require": {
+        "psr/cache": "^3.0"
+    }
+}

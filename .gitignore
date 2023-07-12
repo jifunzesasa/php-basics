@@ -1,3 +1,4 @@
+Created .gitignore file for flag type composer.
 composer.phar
 /vendor/
 
