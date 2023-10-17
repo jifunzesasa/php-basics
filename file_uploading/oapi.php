@@ -10,32 +10,35 @@ class FileUploadAPI {
     public function handleRequest() {
         header('Content-Type: application/json');
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $json = file_get_contents('php://input');
-            $data = json_decode($json);
-
-            if ($this->isValidRequest($data)) {
-                $base64Data = $this->extractBase64Data($data->base64_file);
-                $fileData = base64_decode($base64Data);
-
-                if ($fileData !== false) {
-                    $fileName = $this->generateUniqueFileName();
-                    if ($this->saveFile($fileName, $fileData)) {
-                        $response = array('message' => 'File uploaded successfully.');
-                    } else {
-                        $response = array('error' => 'Failed to save the file.');
-                    }
-                } else {
-                    $response = array('error' => 'Invalid base64 data.');
-                }
-            } else {
-                $response = array('error' => 'Invalid request data.');
-            }
-        } else {
-            $response = array('error' => 'Invalid request method. Use POST.');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(array('error' => 'Invalid request method. Use POST.'));
+            return;
         }
 
-        echo json_encode($response);
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+
+        if (!$this->isValidRequest($data)) {
+            echo json_encode(array('error' => 'Invalid request data.'));
+            return;
+        }
+
+        $base64Data = $this->extractBase64Data($data->base64_file);
+        $fileData = base64_decode($base64Data);
+
+        if ($fileData === false) {
+            echo json_encode(array('error' => 'Invalid base64 data.'));
+            return;
+        }
+
+        $fileName = $this->generateUniqueFileName();
+
+        if (!$this->saveFile($fileName, $fileData)) {
+            echo json_encode(array('error' => 'Failed to save the file.'));
+            return;
+        }
+
+        echo json_encode(array('message' => 'File uploaded successfully.'));
     }
 
     private function isValidRequest($data) {
@@ -44,11 +47,7 @@ class FileUploadAPI {
 
     private function extractBase64Data($base64String) {
         $parts = explode(',', $base64String);
-        if (count($parts) === 2) {
-            return $parts[1];
-        } else {
-            return $base64String;
-        }
+        return count($parts) === 2 ? $parts[1] : $base64String;
     }
 
     private function generateUniqueFileName() {
