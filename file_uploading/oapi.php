@@ -3,7 +3,7 @@
 class FileUploadAPI {
     private $uploadDir;
 
-    public function __construct($uploadDir = 'uploads/') {
+    public function __construct($uploadDir) {
         $this->uploadDir = $uploadDir;
     }
 
@@ -15,7 +15,7 @@ class FileUploadAPI {
             $data = json_decode($json);
 
             if ($this->isValidRequest($data)) {
-                $base64Data = $data->base64_file;
+                $base64Data = $this->extractBase64Data($data->base64_file);
                 $fileData = base64_decode($base64Data);
 
                 if ($fileData !== false) {
@@ -42,6 +42,15 @@ class FileUploadAPI {
         return isset($data->base64_file);
     }
 
+    private function extractBase64Data($base64String) {
+        $parts = explode(',', $base64String);
+        if (count($parts) === 2) {
+            return $parts[1];
+        } else {
+            return $base64String;
+        }
+    }
+
     private function generateUniqueFileName() {
         return uniqid() . '.jpg';
     }
@@ -52,6 +61,7 @@ class FileUploadAPI {
 }
 
 // Usage
+$uploadDir = 'uploads/';
 $api = new FileUploadAPI($uploadDir);
 $api->handleRequest();
 ?>
